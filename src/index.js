@@ -28,6 +28,12 @@ function calculateWinner(squares) {
 	}
 	return null;
 }
+function calcLine(cell) {
+	return Math.ceil(cell / 3);
+}
+function calcCol(cell) {
+	return cell % 3 == 0 ? 3 : cell % 3;
+}
 	
 class Board extends React.Component {
 	renderSquare(i) {
@@ -66,6 +72,7 @@ class Game extends React.Component {
 		this.state = {
 			history: [{
 				squares: Array(9).fill(null),
+				cell: null
 			}],
 			stepNumber: 0,
 			xIsNext: true,
@@ -83,7 +90,8 @@ class Game extends React.Component {
 		squares[i] = this.state.xIsNext ? 'X' : 'O';
 		this.setState({
 			history: history.concat([{
-				squares: squares
+				squares: squares,
+				cell: i + 1
 			}]),
 			stepNumber: history.length,
 			xIsNext: !this.state.xIsNext
@@ -101,11 +109,14 @@ class Game extends React.Component {
 		const winner = calculateWinner(current.squares);
 
 		const moves = history.map((step, move) => {
+			const cell = history[move].cell;
 			const desc = move ? 'Go to move #' + move : 'Go to game start';
+			const commentary = move ? ' Line: '+ calcLine(cell) + ', Col: '+ calcCol(cell) : '';
 
 			return (
 				<li key={move}>
 					<button onClick={() => this.jumpTo(move)}>{desc}</button>
+					<span>{commentary}</span>
 				</li>
 			);
 		});
